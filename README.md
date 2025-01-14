@@ -1,5 +1,5 @@
 # DEMO C++ PROJECTS
-begginer level  github  project for project
+ github  projects
 # GameHub
 
 ## Overview

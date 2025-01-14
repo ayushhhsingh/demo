@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <limits>
 #include <string>
+#include <ctime>
+
 using namespace std;
 
 // Function Prototypes
@@ -14,15 +16,19 @@ void showLeaderboard();
 void loadingUser();
 void savingUser();
 void userAccount();
-void ChessGame();
+void rockPaperScissors();
 void WordleGame();
 void FlashcardGame();
-void updateLeaderboard(const string& player, int score);
+void updateLeaderboard(const string &player, int score);
 void selectAccount();
-bool singlePlayer(const string& user);
+bool singlePlayer(const string &user);
 bool twoPlayer();
 void Wordle();
 bool flashCard();
+char getUserChoice();
+char getComputerChoice();
+void showChoice(char choice);
+void chooseWinner(char player, char computer);
 
 // Global Variables
 fstream UserData;
@@ -31,7 +37,7 @@ fstream UserScore;
 const int MAX_USERS = 10;
 string players[MAX_USERS];
 string User;
-int scores[MAX_USERS] = { 0 };
+int scores[MAX_USERS] = {0};
 bool Win = false;
 int wordleWin = 0;
 bool isCorrect = false;
@@ -39,9 +45,10 @@ bool isCorrect = false;
 int main() {
     loadingUser();
     cout << "=== Welcome to GameHub! Start gaming now. ===" << endl;
+    cout << "=== ************************************* ===" << endl;
     try {
         showMainMenu();
-    } catch (const runtime_error& e) {
+    } catch (const runtime_error &e) {
         cout << "Exception Caught: " << e.what() << endl;
     } catch (...) {
         cout << "Unknown exception detected!" << endl;
@@ -68,11 +75,22 @@ void showMainMenu() {
         }
         system("cls");
         switch (choice) {
-        case 1: userAccount(); break;
-        case 2: showGameMenu(); break;
-        case 3: showLeaderboard(); break;
-        case 4: savingUser(); cout << "Exiting Game Hub..." << endl; exit(0); break;
-        default: cout << "Invalid choice. Try again." << endl;
+        case 1:
+            userAccount();
+            break;
+        case 2:
+            showGameMenu();
+            break;
+        case 3:
+            showLeaderboard();
+            break;
+        case 4:
+            savingUser();
+            cout << "Exiting Game Hub..." << endl;
+            exit(0);
+            break;
+        default:
+            cout << "Invalid choice. Try again." << endl;
         }
     } while (choice != 4);
 }
@@ -92,15 +110,19 @@ void userAccount() {
         }
         system("cls");
         switch (choice) {
-        case 1: selectAccount(); break;
-        case 2: 
-            cout << "Enter Username: "; 
-            cin >> User; 
-            updateLeaderboard(User, 0); 
-            savingUser(); 
+        case 1:
+            selectAccount();
+            break;
+        case 2:
+            cout << "Enter Username: ";
+            cin >> User;
+            updateLeaderboard(User, 0);
+            savingUser();
             return;
-        case 3: return;
-        default: cout << "Invalid choice. Try again." << endl;
+        case 3:
+            return;
+        default:
+            cout << "Invalid choice. Try again." << endl;
         }
     } while (choice != 3);
 }
@@ -110,7 +132,7 @@ void showGameMenu() {
     do {
         cout << "=== Game Menu ===" << endl;
         cout << "1. Flashcard" << endl;
-        cout << "2. Chess" << endl;
+        cout << "2. Rock-Paper-Scissors" << endl;
         cout << "3. Wordle" << endl;
         cout << "4. Return to Main Menu" << endl;
         cout << "Enter your choice: ";
@@ -121,11 +143,19 @@ void showGameMenu() {
         }
         system("cls");
         switch (choice) {
-        case 1: FlashcardGame(); break;
-        case 2: ChessGame(); break;
-        case 3: WordleGame(); break;
-        case 4: return;
-        default: cout << "Invalid choice. Try again." << endl;
+        case 1:
+            FlashcardGame();
+            break;
+        case 2:
+            rockPaperScissors();
+            break;
+        case 3:
+            WordleGame();
+            break;
+        case 4:
+            return;
+        default:
+            cout << "Invalid choice. Try again." << endl;
         }
     } while (choice != 4);
 }
@@ -148,7 +178,7 @@ void showLeaderboard() {
     cout << endl;
 }
 
-void updateLeaderboard(const string& player, int score) {
+void updateLeaderboard(const string &player, int score) {
     for (int i = 0; i < MAX_USERS; ++i) {
         if (players[i] == player) {
             scores[i] += score;
@@ -207,13 +237,71 @@ void selectAccount() {
     system("cls");
 }
 
-void ChessGame() {
-    if (User.empty()) {
-        cout << "User account selection is required!" << endl;
-        return;
+void rockPaperScissors() {
+    char player = getUserChoice();
+    cout << "Your choice: ";
+    showChoice(player);
+
+    char computer = getComputerChoice();
+    cout << "Computer's choice: ";
+    showChoice(computer);
+
+    chooseWinner(player, computer);
+}
+
+char getUserChoice() {
+    char player;
+    do {
+        cout << "ROCK PAPER SCISSORS GAME!!!!!\n";
+        cout << "-----------------------------\n";
+        cout << "Choose R for Rock\n";
+        cout << "Choose P for Paper\n";
+        cout << "Choose S for Scissors\n";
+        cin >> player;
+        player = tolower(player);
+    } while (player != 'r' && player != 'p' && player != 's');
+    return player;
+}
+
+char getComputerChoice() {
+    srand(static_cast<unsigned>(time(0)));
+    int num = rand() % 3;
+    switch (num) {
+    case 0:
+        return 'r';
+    case 1:
+        return 'p';
+    case 2:
+        return 's';
     }
-    Win = singlePlayer(User);  // Replace with actual logic
-    if (Win) updateLeaderboard(User, 100);
+    return 'r'; // Default fallback
+}
+
+void showChoice(char choice) {
+    switch (choice) {
+    case 'r':
+        cout << "ROCK\n";
+        break;
+    case 'p':
+        cout << "PAPER\n";
+        break;
+    case 's':
+        cout << "SCISSORS\n";
+        break;
+    }
+}
+
+void chooseWinner(char player, char computer) {
+    if (player == computer) {
+        cout << "It's a tie!\n";
+    } else if ((player == 'r' && computer == 's') ||
+               (player == 'p' && computer == 'r') ||
+               (player == 's' && computer == 'p')) {
+        cout << "YOU WIN!!!!!!!!!!\n";
+        updateLeaderboard(User, 10);
+    } else {
+        cout << "You lose!\n";
+    }
 }
 
 void WordleGame() {
@@ -221,8 +309,9 @@ void WordleGame() {
         cout << "User account selection is required!" << endl;
         return;
     }
-    Wordle();  // Placeholder function
-    if (wordleWin) updateLeaderboard(User, wordleWin);
+    Wordle(); // Placeholder function
+    if (wordleWin)
+        updateLeaderboard(User, wordleWin);
 }
 
 void FlashcardGame() {
@@ -230,12 +319,13 @@ void FlashcardGame() {
         cout << "User account selection is required!" << endl;
         return;
     }
-    isCorrect = flashCard();  // Placeholder function
-    if (isCorrect) updateLeaderboard(User, 100);
+    isCorrect = flashCard(); // Placeholder function
+    if (isCorrect)
+        updateLeaderboard(User, 100);
 }
 
 // Placeholder Function Definitions
-bool singlePlayer(const string& user) { return true; }
+bool singlePlayer(const string &user) { return true; }
 bool twoPlayer() { return true; }
 void Wordle() { wordleWin = 100; }
 bool flashCard() { return true; }

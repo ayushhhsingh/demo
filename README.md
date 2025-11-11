@@ -1,5 +1,5 @@
 # DEMO C++ PROJECTS
- github  projects
+
 # GameHub
 
 ## Overview
